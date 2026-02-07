@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { FaPlus } from 'react-icons/fa';
 import ProductCard from '../../components/ProductCard/ProductCard';
@@ -6,67 +6,49 @@ import SearchBar from '../../components/SearchBar/SearchBar';
 import FilterBar from '../../components/FilterBar/FilterBar';
 import SortBar from '../../components/SortBar/SortBar';
 import Pagination from '../../components/Pagination/Pagination';
-import { productService } from '../../services/productService';
-import { productOwnerService } from '../../services/productOwnerService';
-import { Product, ProductOwner, ProductFilters, SortField, SortOrder, PaginationInfo } from '../../types';
+import { useAppDispatch, useAppSelector } from '../../store/hooks';
+import { deleteProductById, fetchProducts } from '../../store/productsSlice';
+import { fetchOwners } from '../../store/ownersSlice';
+import { Product, ProductFilters, SortField, SortOrder } from '../../types';
 import './ProductList.css';
 
 const ProductList: React.FC = () => {
-  const [products, setProducts] = useState<Product[]>([]);
-  const [owners, setOwners] = useState<ProductOwner[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
+  const dispatch = useAppDispatch();
+  const products = useAppSelector((s) => s.products.items);
+  const pagination = useAppSelector((s) => s.products.pagination);
+  const loading = useAppSelector((s) => s.products.loading);
+  const error = useAppSelector((s) => s.products.error);
+  const owners = useAppSelector((s) => s.owners.items);
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [filters, setFilters] = useState<ProductFilters>({});
   const [sortBy, setSortBy] = useState<SortField>('createdAt');
   const [sortOrder, setSortOrder] = useState<SortOrder>('DESC');
   const [page, setPage] = useState<number>(1);
   const [limit, setLimit] = useState<number>(4);
-  const [pagination, setPagination] = useState<PaginationInfo | null>(null);
 
-  const loadData = useCallback(async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      
-      const filtersWithSearch = {
-        ...filters,
-        search: searchTerm || undefined
-      };
+  useEffect(() => {
+    dispatch(fetchOwners());
+  }, [dispatch]);
 
-      const response = await productService.getAllProducts({
+  const filtersWithSearch = useMemo(
+    () => ({
+      ...filters,
+      search: searchTerm || undefined
+    }),
+    [filters, searchTerm]
+  );
+
+  useEffect(() => {
+    dispatch(
+      fetchProducts({
         filters: filtersWithSearch,
         page,
         limit,
         sortBy,
         sortOrder
-      });
-
-      setProducts(response.products);
-      setPagination(response.pagination);
-    } catch (err) {
-      console.error('Error loading data:', err);
-      setError('Failed to load products. Please try again.');
-    } finally {
-      setLoading(false);
-    }
-  }, [filters, searchTerm, page, limit, sortBy, sortOrder]);
-
-  useEffect(() => {
-    const loadOwners = async () => {
-      try {
-        const ownersData = await productOwnerService.getAllOwners();
-        setOwners(ownersData);
-      } catch (err) {
-        console.error('Error loading owners:', err);
-      }
-    };
-    loadOwners();
-  }, []);
-
-  useEffect(() => {
-    loadData();
-  }, [loadData]);
+      })
+    );
+  }, [dispatch, filtersWithSearch, page, limit, sortBy, sortOrder]);
 
   const handleSearchChange = (value: string) => {
     setSearchTerm(value);
@@ -97,13 +79,7 @@ const ProductList: React.FC = () => {
 
   const handleDelete = async (id: number): Promise<void> => {
     if (window.confirm('Are you sure you want to delete this product?')) {
-      try {
-        await productService.deleteProduct(id);
-        loadData();
-      } catch (err) {
-        console.error('Error deleting product:', err);
-        setError('Failed to delete product. Please try again.');
-      }
+      await dispatch(deleteProductById(id));
     }
   };
 
@@ -161,7 +137,7 @@ const ProductList: React.FC = () => {
       ) : (
         <>
           <div className="product-grid">
-            {products.map(product => (
+            {products.map((product: Product) => (
               <ProductCard key={product.id} product={product} onDelete={handleDelete} />
             ))}
           </div>

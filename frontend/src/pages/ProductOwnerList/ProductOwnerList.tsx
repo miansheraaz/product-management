@@ -1,32 +1,20 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { FaEnvelope, FaBox } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
-import { productOwnerService } from '../../services/productOwnerService';
-import { ProductOwner } from '../../types';
+import { useAppDispatch, useAppSelector } from '../../store/hooks';
+import { fetchOwners } from '../../store/ownersSlice';
+import type { ProductOwner } from '../../types';
 import './ProductOwnerList.css';
 
 const ProductOwnerList: React.FC = () => {
-  const [owners, setOwners] = useState<ProductOwner[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
+  const dispatch = useAppDispatch();
+  const owners = useAppSelector((s) => s.owners.items);
+  const loading = useAppSelector((s) => s.owners.loading);
+  const error = useAppSelector((s) => s.owners.error);
 
   useEffect(() => {
-    loadOwners();
-  }, []);
-
-  const loadOwners = async (): Promise<void> => {
-    try {
-      setLoading(true);
-      setError(null);
-      const data = await productOwnerService.getAllOwners();
-      setOwners(data);
-    } catch (error) {
-      console.error('Error loading owners:', error);
-      setError('Failed to load product owners. Please try again.');
-    } finally {
-      setLoading(false);
-    }
-  };
+    dispatch(fetchOwners());
+  }, [dispatch]);
 
   if (loading) {
     return <div className="loading">Loading product owners...</div>;
@@ -43,7 +31,7 @@ const ProductOwnerList: React.FC = () => {
       {error && <div className="error-banner">{error}</div>}
       
       <div className="owner-grid">
-        {owners.map(owner => (
+        {owners.map((owner: ProductOwner) => (
           <div key={owner.id} className="owner-card">
             <h3>{owner.name}</h3>
             <p className="owner-email">
