@@ -70,7 +70,16 @@ cd backend
 npm install
 ```
 
-3. Create `.env` file:
+3. Configure environment variables:
+
+- Copy the example file and update values as needed:
+
+```bash
+copy .env.example .env
+```
+
+- Required variables (the backend will **fail to start** if `DB_NAME`, `DB_USER`, or `DB_PASSWORD` are missing):
+
 ```env
 DB_HOST=localhost
 DB_PORT=5432
@@ -100,7 +109,21 @@ cd frontend
 npm install
 ```
 
-3. Start the development server:
+3. Configure environment variables:
+
+- Copy the example file and update values as needed:
+
+```bash
+copy .env.example .env
+```
+
+- Required variables:
+
+```env
+REACT_APP_API_BASE_URL=http://localhost:3001/api
+```
+
+4. Start the development server:
 ```bash
 npm start
 ```

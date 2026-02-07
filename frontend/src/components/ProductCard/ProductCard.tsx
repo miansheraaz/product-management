@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaBox, FaEllipsisV, FaEdit, FaTrash } from 'react-icons/fa';
 import { Product } from '../../types';
+import { BACKEND_BASE_URL } from '../../services/api';
 import './ProductCard.css';
 
 interface ProductCardProps {
@@ -18,7 +19,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onDelete }) => {
   const getImageUrl = (image: string | null): string | undefined => {
     if (!image) return undefined;
     if (image.startsWith('http')) return image;
-    return `http://localhost:3001${image}`;
+    return `${BACKEND_BASE_URL}${image}`;
   };
 
   const handleCardClick = () => {

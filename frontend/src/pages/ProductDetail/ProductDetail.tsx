@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { FaArrowLeft, FaTag, FaBox, FaUser, FaEdit, FaTrash } from 'react-icons/fa';
 import { productService } from '../../services/productService';
+import { BACKEND_BASE_URL } from '../../services/api';
 import { Product } from '../../types';
 import './ProductDetail.css';
 
@@ -10,6 +11,7 @@ const ProductDetail: React.FC = () => {
   const navigate = useNavigate();
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (id) {
@@ -21,6 +23,7 @@ const ProductDetail: React.FC = () => {
     if (!id) return;
     try {
       setLoading(true);
+      setError(null);
       const data = await productService.getProductById(id);
       setProduct(data);
     } catch (error) {
@@ -35,11 +38,12 @@ const ProductDetail: React.FC = () => {
     if (!id) return;
     if (window.confirm('Are you sure you want to delete this product?')) {
       try {
+        setError(null);
         await productService.deleteProduct(id);
         navigate('/products');
       } catch (error) {
         console.error('Error deleting product:', error);
-        alert('Failed to delete product');
+        setError('Failed to delete product. Please try again.');
       }
     }
   };
@@ -53,11 +57,12 @@ const ProductDetail: React.FC = () => {
   }
 
   const imageUrl = product.image 
-    ? (product.image.startsWith('http') ? product.image : `http://localhost:3001${product.image}`)
+    ? (product.image.startsWith('http') ? product.image : `${BACKEND_BASE_URL}${product.image}`)
     : null;
 
   return (
     <div className="product-detail">
+      {error && <div className="error-banner">{error}</div>}
       {/* Header Section */}
       <div className="product-detail-header">
         <Link to="/products" className="back-link">

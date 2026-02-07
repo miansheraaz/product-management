@@ -1,6 +1,7 @@
 // ProductOwner model using Sequelize
 import { DataTypes, Model, Optional } from 'sequelize';
 import sequelize from '../config/database';
+import type Product from './Product';
 
 interface ProductOwnerAttributes {
   id: number;
@@ -20,7 +21,7 @@ class ProductOwner extends Model<ProductOwnerAttributes, ProductOwnerCreationAtt
   public readonly updated_at!: Date;
 
   // Associations (will be set in index.ts)
-  public products?: any[];
+  public products?: Product[];
 }
 
 ProductOwner.init(

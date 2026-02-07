@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { FaEnvelope, FaBox } from 'react-icons/fa';
+import { Link } from 'react-router-dom';
 import { productOwnerService } from '../../services/productOwnerService';
 import { ProductOwner } from '../../types';
 import './ProductOwnerList.css';
@@ -7,6 +8,7 @@ import './ProductOwnerList.css';
 const ProductOwnerList: React.FC = () => {
   const [owners, setOwners] = useState<ProductOwner[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     loadOwners();
@@ -15,11 +17,12 @@ const ProductOwnerList: React.FC = () => {
   const loadOwners = async (): Promise<void> => {
     try {
       setLoading(true);
+      setError(null);
       const data = await productOwnerService.getAllOwners();
       setOwners(data);
     } catch (error) {
       console.error('Error loading owners:', error);
-      alert('Failed to load product owners');
+      setError('Failed to load product owners. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -31,7 +34,13 @@ const ProductOwnerList: React.FC = () => {
 
   return (
     <div className="product-owner-list">
-      <h1>Product Owners</h1>
+      <div className="product-owner-list-header">
+        <h1>Product Owners</h1>
+        <Link to="/product-owners/new" className="btn-primary">
+          Add Owner
+        </Link>
+      </div>
+      {error && <div className="error-banner">{error}</div>}
       
       <div className="owner-grid">
         {owners.map(owner => (

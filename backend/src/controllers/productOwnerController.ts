@@ -5,7 +5,7 @@ import { Response, NextFunction } from 'express';
 import { CustomRequest, FormattedProductOwner } from '../types';
 
 // Helper function to format owner
-const formatOwner = (owner: any, productCount: number): FormattedProductOwner => {
+const formatOwner = (owner: ProductOwner, productCount: number): FormattedProductOwner => {
   return {
     id: owner.id,
     name: owner.name,
@@ -15,7 +15,7 @@ const formatOwner = (owner: any, productCount: number): FormattedProductOwner =>
 };
 
 class ProductOwnerController {
-  async getAllOwners(req: CustomRequest, res: Response, next: NextFunction): Promise<void> {
+  async getAllOwners(_req: CustomRequest, res: Response, next: NextFunction): Promise<void> {
     try {
       const owners = await ProductOwner.findAll({
         order: [['name', 'ASC']]
@@ -70,15 +70,16 @@ class ProductOwnerController {
       });
 
       res.status(201).json(formatOwner(owner, 0));
-    } catch (error: any) {
-      if (error.name === 'SequelizeUniqueConstraintError') {
+    } catch (error: unknown) {
+      const err = error as { name?: string; errors?: Array<{ message: string }> };
+      if (err.name === 'SequelizeUniqueConstraintError') {
         res.status(400).json({ error: 'Email already exists' });
         return;
       }
-      if (error.name === 'SequelizeValidationError') {
+      if (err.name === 'SequelizeValidationError') {
         res.status(400).json({ 
           error: 'Validation error',
-          details: error.errors.map((e: any) => e.message)
+          details: (err.errors || []).map((e) => e.message)
         });
         return;
       }

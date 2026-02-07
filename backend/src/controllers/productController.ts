@@ -8,7 +8,7 @@ import fs from 'fs';
 import { CustomRequest, FormattedProduct } from '../types';
 
 // Helper function to format product
-const formatProduct = (product: any): FormattedProduct => {
+const formatProduct = (product: Product): FormattedProduct => {
   // If image exists and is a local path, convert to URL
   let imageUrl = product.image;
   if (imageUrl && !imageUrl.startsWith('http')) {
@@ -19,11 +19,11 @@ const formatProduct = (product: any): FormattedProduct => {
     id: product.id,
     name: product.name,
     sku: product.sku,
-    price: parseFloat(product.price),
-    inventory: parseInt(product.inventory),
+    price: Number(product.price),
+    inventory: Number(product.inventory),
     status: product.status,
-    image: imageUrl,
-    description: product.description,
+    image: imageUrl ?? null,
+    description: product.description ?? null,
     ownerId: product.owner_id,
     owner: product.owner ? {
       id: product.owner.id,
@@ -65,7 +65,7 @@ class ProductController {
       };
       const orderBy = fieldMapping[sortBy] || 'created_at';
 
-      const where: any = {};
+      const where: Record<string | symbol, unknown> = {};
       
       if (filters.status) {
         where.status = filters.status;
@@ -84,13 +84,14 @@ class ProductController {
 
       // Price range filter
       if (filters.minPrice || filters.maxPrice) {
-        where.price = {};
+        const priceWhere: Record<string | symbol, unknown> = {};
         if (filters.minPrice) {
-          where.price[Op.gte] = parseFloat(filters.minPrice);
+          priceWhere[Op.gte] = parseFloat(filters.minPrice);
         }
         if (filters.maxPrice) {
-          where.price[Op.lte] = parseFloat(filters.maxPrice);
+          priceWhere[Op.lte] = parseFloat(filters.maxPrice);
         }
+        where.price = priceWhere;
       }
 
       const { count, rows: products } = await Product.findAndCountAll({
@@ -191,16 +192,17 @@ class ProductController {
       }
 
       res.status(201).json(formatProduct(productWithOwner));
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const err = error as { name?: string };
       // Delete uploaded file if product creation fails
       if (req.file) {
         fs.unlinkSync(req.file.path);
       }
-      if (error.name === 'SequelizeUniqueConstraintError') {
+      if (err.name === 'SequelizeUniqueConstraintError') {
         res.status(400).json({ error: 'SKU already exists' });
         return;
       }
-      if (error.name === 'SequelizeForeignKeyConstraintError') {
+      if (err.name === 'SequelizeForeignKeyConstraintError') {
         res.status(400).json({ error: 'Invalid product owner' });
         return;
       }
@@ -273,16 +275,17 @@ class ProductController {
       }
 
       res.json(formatProduct(updatedProduct));
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const err = error as { name?: string };
       // Delete uploaded file if update fails
       if (req.file) {
         fs.unlinkSync(req.file.path);
       }
-      if (error.name === 'SequelizeUniqueConstraintError') {
+      if (err.name === 'SequelizeUniqueConstraintError') {
         res.status(400).json({ error: 'SKU already exists' });
         return;
       }
-      if (error.name === 'SequelizeForeignKeyConstraintError') {
+      if (err.name === 'SequelizeForeignKeyConstraintError') {
         res.status(400).json({ error: 'Invalid product owner' });
         return;
       }

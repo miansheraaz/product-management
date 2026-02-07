@@ -44,14 +44,15 @@ app.use('/api/products', productRoutes);
 app.use('/api/product-owners', productOwnerRoutes);
 
 // Health check
-app.get('/api/health', (req: Request, res: Response) => {
+app.get('/api/health', (_req: Request, res: Response) => {
   res.json({ status: 'ok', message: 'API is running' });
 });
 
 // Error handling middleware
-app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
+app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {
   console.error('Error:', err);
-  res.status((err as any).status || 500).json({
+  const status = (err as Error & { status?: number }).status || 500;
+  res.status(status).json({
     error: {
       message: err.message || 'Internal Server Error',
       ...(process.env.NODE_ENV === 'development' && { stack: err.stack })
@@ -60,7 +61,7 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
 });
 
 // 404 handler
-app.use((req: Request, res: Response) => {
+app.use((_req: Request, res: Response) => {
   res.status(404).json({ error: 'Route not found' });
 });
 

@@ -21,7 +21,7 @@ const ProductList: React.FC = () => {
   const [sortBy, setSortBy] = useState<SortField>('createdAt');
   const [sortOrder, setSortOrder] = useState<SortOrder>('DESC');
   const [page, setPage] = useState<number>(1);
-  const [limit] = useState<number>(5);
+  const [limit, setLimit] = useState<number>(4);
   const [pagination, setPagination] = useState<PaginationInfo | null>(null);
 
   const loadData = useCallback(async () => {
@@ -89,6 +89,12 @@ const ProductList: React.FC = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  const handleLimitChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const nextLimit = parseInt(e.target.value, 10);
+    setLimit(nextLimit);
+    setPage(1);
+  };
+
   const handleDelete = async (id: number): Promise<void> => {
     if (window.confirm('Are you sure you want to delete this product?')) {
       try {
@@ -96,7 +102,7 @@ const ProductList: React.FC = () => {
         loadData();
       } catch (err) {
         console.error('Error deleting product:', err);
-        alert('Failed to delete product');
+        setError('Failed to delete product. Please try again.');
       }
     }
   };
@@ -127,6 +133,18 @@ const ProductList: React.FC = () => {
       <FilterBar filters={filters} onFilterChange={handleFilterChange} owners={owners} />
 
       <SortBar sortBy={sortBy} sortOrder={sortOrder} onSortChange={handleSortChange} />
+
+      <div className="product-list-controls">
+        <label className="page-limit">
+          Items per page:
+          <select value={limit} onChange={handleLimitChange}>
+            <option value={4}>4</option>
+            <option value={8}>8</option>
+            <option value={12}>12</option>
+            <option value={20}>20</option>
+          </select>
+        </label>
+      </div>
 
       {loading && products.length > 0 && (
         <div className="loading-overlay">Loading...</div>

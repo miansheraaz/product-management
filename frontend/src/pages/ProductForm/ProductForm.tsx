@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { productService } from '../../services/productService';
 import { productOwnerService } from '../../services/productOwnerService';
+import { BACKEND_BASE_URL } from '../../services/api';
 import { ProductOwner, ProductFormData } from '../../types';
 import './ProductForm.css';
 
@@ -30,6 +31,7 @@ const ProductForm: React.FC = () => {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [owners, setOwners] = useState<ProductOwner[]>([]);
   const [errors, setErrors] = useState<FormErrors>({});
+  const [submitError, setSubmitError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
 
   useEffect(() => {
@@ -121,17 +123,18 @@ const ProductForm: React.FC = () => {
     if (file) {
       // Validate file type
       if (!file.type.match('image.*')) {
-        alert('Please select an image file');
+        setSubmitError('Please select an image file');
         return;
       }
       
       // Validate file size (5MB)
       if (file.size > 5 * 1024 * 1024) {
-        alert('Image size must be less than 5MB');
+        setSubmitError('Image size must be less than 5MB');
         return;
       }
 
       setImageFile(file);
+      setSubmitError(null);
       
       // Create preview
       const reader = new FileReader();
@@ -153,6 +156,7 @@ const ProductForm: React.FC = () => {
 
     try {
       setLoading(true);
+      setSubmitError(null);
       const payload = {
         name: formData.name,
         sku: formData.sku,
@@ -172,8 +176,13 @@ const ProductForm: React.FC = () => {
       navigate('/products');
     } catch (error: any) {
       console.error('Error saving product:', error);
-      const errorMessage = error.response?.data?.error || error.response?.data?.errors?.[0]?.msg || 'Failed to save product';
-      alert(errorMessage);
+      const apiError = error.response?.data;
+      const errorMessage =
+        (typeof apiError?.error === 'string' && apiError.error) ||
+        (typeof apiError?.error?.message === 'string' && apiError.error.message) ||
+        (typeof apiError?.errors?.[0]?.msg === 'string' && apiError.errors[0].msg) ||
+        'Failed to save product';
+      setSubmitError(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -186,6 +195,7 @@ const ProductForm: React.FC = () => {
   return (
     <div className="product-form">
       <h1>{isEdit ? 'Edit Product' : 'Create New Product'}</h1>
+      {submitError && <div className="error-banner">{submitError}</div>}
 
       <form onSubmit={handleSubmit} className="form" encType="multipart/form-data">
         <div className="form-group">
@@ -292,7 +302,7 @@ const ProductForm: React.FC = () => {
           {(imagePreview || (!imageFile && formData.image)) && (
             <div className="image-preview">
               <img 
-                src={imagePreview || (formData.image.startsWith('http') ? formData.image : `http://localhost:3001${formData.image}`)} 
+                src={imagePreview || (formData.image.startsWith('http') ? formData.image : `${BACKEND_BASE_URL}${formData.image}`)} 
                 alt={imagePreview ? "Preview" : "Current"} 
               />
             </div>

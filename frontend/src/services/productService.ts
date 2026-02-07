@@ -49,8 +49,7 @@ export const productService = {
     const formData = new FormData();
     
     // Append all product data
-    Object.keys(productData).forEach(key => {
-      const value = (productData as any)[key];
+    (Object.entries(productData) as Array<[keyof ProductCreateData, ProductCreateData[keyof ProductCreateData]]>).forEach(([key, value]) => {
       if (value !== null && value !== undefined && value !== '') {
         formData.append(key, value.toString());
       }
@@ -73,8 +72,7 @@ export const productService = {
     const formData = new FormData();
     
     // Append all product data
-    Object.keys(productData).forEach(key => {
-      const value = (productData as any)[key];
+    (Object.entries(productData) as Array<[keyof ProductCreateData, ProductCreateData[keyof ProductCreateData]]>).forEach(([key, value]) => {
       if (value !== null && value !== undefined && value !== '') {
         formData.append(key, value.toString());
       }

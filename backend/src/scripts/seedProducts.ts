@@ -1,6 +1,7 @@
 // Seed script to add professional furniture products
 import dotenv from 'dotenv';
 import { Product, ProductOwner, sequelize } from '../models';
+import type { CreationAttributes } from 'sequelize';
 
 dotenv.config();
 
@@ -8,7 +9,7 @@ const seedProducts = async (): Promise<void> => {
   try {
     // Find the product owner (Muhammad Sharaz)
     const owner = await ProductOwner.findOne({
-      where: { email: 'miansherraz1@gmail.com' }
+      where: { email: 'miansheraaz1@gmail.com' }
     });
 
     if (!owner) {
@@ -23,7 +24,7 @@ const seedProducts = async (): Promise<void> => {
       return;
     }
 
-    const furnitureProducts = [
+    const furnitureProducts: Array<CreationAttributes<Product>> = [
       {
         name: 'Modern Wooden Dining Table',
         sku: 'FURN-001',
@@ -32,7 +33,7 @@ const seedProducts = async (): Promise<void> => {
         status: 'active',
         owner_id: owner.id,
         description: 'Beautiful modern dining table made from solid oak wood. Seats 6 people comfortably. Perfect for family dinners and entertaining guests. Features a smooth finish and sturdy construction.',
-        image: null
+        image: 'https://picsum.photos/seed/FURN-001/1200/800'
       },
       {
         name: 'Ergonomic Office Chair',
@@ -42,7 +43,7 @@ const seedProducts = async (): Promise<void> => {
         status: 'active',
         owner_id: owner.id,
         description: 'Comfortable ergonomic office chair with lumbar support and adjustable height. Ideal for long work hours. Features breathable mesh back and padded seat for maximum comfort.',
-        image: null
+        image: 'https://picsum.photos/seed/FURN-002/1200/800'
       },
       {
         name: 'Leather Sofa Set',
@@ -52,7 +53,7 @@ const seedProducts = async (): Promise<void> => {
         status: 'active',
         owner_id: owner.id,
         description: 'Luxurious 3-seater leather sofa set with matching armchairs. Premium quality genuine leather upholstery. Includes throw pillows and elegant design perfect for living rooms.',
-        image: null
+        image: 'https://picsum.photos/seed/FURN-003/1200/800'
       },
       {
         name: 'Bookshelf with 5 Shelves',
@@ -62,7 +63,7 @@ const seedProducts = async (): Promise<void> => {
         status: 'active',
         owner_id: owner.id,
         description: 'Sturdy wooden bookshelf with 5 adjustable shelves. Perfect for organizing books, decor, and storage. Made from high-quality MDF with elegant finish. Easy to assemble.',
-        image: null
+        image: 'https://picsum.photos/seed/FURN-004/1200/800'
       },
       {
         name: 'Coffee Table with Storage',
@@ -72,7 +73,7 @@ const seedProducts = async (): Promise<void> => {
         status: 'active',
         owner_id: owner.id,
         description: 'Modern coffee table with hidden storage compartment. Made from high-quality MDF with elegant finish. Perfect for keeping living room organized. Features smooth edges and contemporary design.',
-        image: null
+        image: 'https://picsum.photos/seed/FURN-005/1200/800'
       },
       {
         name: 'Bed Frame Queen Size',
@@ -82,7 +83,7 @@ const seedProducts = async (): Promise<void> => {
         status: 'active',
         owner_id: owner.id,
         description: 'Solid wood queen-size bed frame with headboard. Easy assembly with all hardware included. Features elegant design and sturdy construction. Perfect for modern bedrooms.',
-        image: null
+        image: 'https://picsum.photos/seed/FURN-006/1200/800'
       },
       {
         name: 'Wardrobe Closet',
@@ -92,7 +93,7 @@ const seedProducts = async (): Promise<void> => {
         status: 'active',
         owner_id: owner.id,
         description: 'Spacious 4-door wardrobe closet with hanging space and shelves. Perfect for bedroom organization. Features sliding doors and multiple compartments for efficient storage.',
-        image: null
+        image: 'https://picsum.photos/seed/FURN-007/1200/800'
       },
       {
         name: 'TV Stand Entertainment Center',
@@ -102,7 +103,7 @@ const seedProducts = async (): Promise<void> => {
         status: 'active',
         owner_id: owner.id,
         description: 'Modern TV stand with cable management and storage compartments. Accommodates TVs up to 65 inches. Features open shelves and closed cabinets for media organization.',
-        image: null
+        image: 'https://picsum.photos/seed/FURN-008/1200/800'
       },
       {
         name: 'Dining Chairs Set of 4',
@@ -112,7 +113,7 @@ const seedProducts = async (): Promise<void> => {
         status: 'active',
         owner_id: owner.id,
         description: 'Set of 4 comfortable dining chairs with padded seats. Matching design for your dining table. Features sturdy construction and elegant upholstery. Perfect for family dining.',
-        image: null
+        image: 'https://picsum.photos/seed/FURN-009/1200/800'
       },
       {
         name: 'Desk with Drawers',
@@ -122,7 +123,7 @@ const seedProducts = async (): Promise<void> => {
         status: 'active',
         owner_id: owner.id,
         description: 'Spacious office desk with 3 drawers for storage. Perfect for home office or study room. Features smooth surface and ample workspace. Includes cable management system.',
-        image: null
+        image: 'https://picsum.photos/seed/FURN-010/1200/800'
       },
       {
         name: 'Recliner Armchair',
@@ -132,7 +133,7 @@ const seedProducts = async (): Promise<void> => {
         status: 'active',
         owner_id: owner.id,
         description: 'Comfortable recliner armchair with footrest. Perfect for relaxation and reading. Features plush padding and smooth reclining mechanism. Available in multiple colors.',
-        image: null
+        image: 'https://picsum.photos/seed/FURN-011/1200/800'
       },
       {
         name: 'Side Table Nightstand',
@@ -142,7 +143,7 @@ const seedProducts = async (): Promise<void> => {
         status: 'active',
         owner_id: owner.id,
         description: 'Elegant side table nightstand with drawer. Perfect for bedrooms. Features compact design and storage drawer. Made from solid wood with smooth finish.',
-        image: null
+        image: 'https://picsum.photos/seed/FURN-012/1200/800'
       },
       {
         name: 'Bar Stool Set of 2',
@@ -152,7 +153,7 @@ const seedProducts = async (): Promise<void> => {
         status: 'active',
         owner_id: owner.id,
         description: 'Modern bar stool set of 2 with adjustable height. Perfect for kitchen islands and bars. Features comfortable padded seats and sturdy construction. Easy to clean.',
-        image: null
+        image: 'https://picsum.photos/seed/FURN-013/1200/800'
       },
       {
         name: 'Console Table Entryway',
@@ -162,7 +163,7 @@ const seedProducts = async (): Promise<void> => {
         status: 'active',
         owner_id: owner.id,
         description: 'Elegant console table for entryway or hallway. Features drawer and open shelf for storage. Perfect for displaying decor and organizing keys. Modern design.',
-        image: null
+        image: 'https://picsum.photos/seed/FURN-014/1200/800'
       },
       {
         name: 'Accent Chair',
@@ -172,7 +173,7 @@ const seedProducts = async (): Promise<void> => {
         status: 'active',
         owner_id: owner.id,
         description: 'Stylish accent chair with modern design. Perfect for living rooms and offices. Features comfortable padding and elegant upholstery. Available in various colors.',
-        image: null
+        image: 'https://picsum.photos/seed/FURN-015/1200/800'
       }
     ];
 

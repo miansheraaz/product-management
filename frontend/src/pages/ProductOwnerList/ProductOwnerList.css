@@ -24,6 +24,17 @@
   background-clip: text;
 }
 
+.product-owner-list-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.product-owner-list-header h1 {
+  margin-bottom: 0;
+}
+
 @media (max-width: 768px) {
   .product-owner-list {
     padding: 2rem;
@@ -31,6 +42,11 @@
   
   .product-owner-list h1 {
     font-size: 2rem;
+  }
+
+  .product-owner-list-header {
+    flex-direction: column;
+    align-items: flex-start;
   }
 }
 

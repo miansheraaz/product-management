@@ -8,7 +8,7 @@ const seedProductOwner = async (): Promise<void> => {
   try {
     // Check if owner already exists
     const existingOwner = await ProductOwner.findOne({
-      where: { email: 'miansherraz1@gmail.com' }
+      where: { email: 'miansheraaz1@gmail.com' }
     });
 
     if (existingOwner) {
@@ -19,7 +19,7 @@ const seedProductOwner = async (): Promise<void> => {
     // Create the owner
     const owner = await ProductOwner.create({
       name: 'Muhammad Sharaz',
-      email: 'miansherraz1@gmail.com'
+      email: 'miansheraaz1@gmail.com'
     });
 
     console.log('Product owner seeded successfully:', owner.name);

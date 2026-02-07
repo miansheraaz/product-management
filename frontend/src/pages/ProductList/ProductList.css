@@ -152,3 +152,25 @@
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   border-left: 4px solid #e74c3c;
 }
+
+.product-list-controls {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  margin: 0.5rem 0 1rem;
+}
+
+.page-limit {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #2c3e50;
+  font-weight: 600;
+}
+
+.page-limit select {
+  padding: 0.5rem 0.75rem;
+  border-radius: 10px;
+  border: 1px solid rgba(102, 126, 234, 0.25);
+  background: #fff;
+}
